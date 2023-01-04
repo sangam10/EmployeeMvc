@@ -1,0 +1,79 @@
+@model IEnumerable<EmployeeInfo.Models.Employee>
+
+@{ ViewData["Title"] = "All Employee";var i = 0; }
+
+<div class="container">
+  <div class="card">
+    <div class="card-header">
+      <div class="d-flex justify-content-between">
+        <h3>All Employees List</h3>
+        <a
+          class="btn btn-outline-primary"
+          asp-area=""
+          asp-controller="Employee"
+          asp-action="Create"
+        >
+          Add New
+        </a>
+      </div>
+    </div>
+    <div class="card-body">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>SN</th>
+            <th>@Html.DisplayNameFor(model=>model.ProfileUrl)</th>
+            <th>@Html.DisplayNameFor(model=>model.FullName)</th>
+            <th>@Html.DisplayNameFor(model=>model.Salary)</th>
+            <th>@Html.DisplayNameFor(model=>model.Email)</th>
+            <th>@Html.DisplayNameFor(model=>model.CreatedAt)</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          @foreach(var emp in Model){
+            <tr>
+              <td>@(++i)</td>
+              <td><img src="@emp.ProfileUrl" style="height:80px;width:80px;border-radius:40px;"></td>
+              <td>@emp.FullName</td>
+              <td>@emp.Salary</td>
+              <td>@emp.Email</td>
+              <td>@emp.CreatedAt</td>
+              <td>
+                <a class="btn btn-outline-success me-1" asp-controller="Employee" asp-action="Edit" asp-route-id="@emp.Id">edit</a>
+                <button class="btn btn-outline-danger me-1 delete-employee" data-id="@emp.Id">Delete</button>
+                <form id="delete-employee-@emp.Id" action="/Employee/Delete/@emp.Id" method="POST">
+                  @Html.AntiForgeryToken()
+                </form>
+              </td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+@section Scripts{
+  <script>
+      $(".delete-employee").on('click',function(){
+        event.preventDefault()
+        var id = $(this).attr("data-id")
+        var form = $("#delete-employee-"+id)
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#3085d6',
+          cancelButtonColor: '#d33',
+          confirmButtonText: 'Yes, delete it!'
+        }).then((result) => {
+          if (result.isConfirmed) {
+            form.submit()
+          }
+        })
+      })
+  </script>
+}
+
